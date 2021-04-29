@@ -12,7 +12,7 @@ export interface AnimetedGridProps extends GridProps {
 
 const AnimationGrid: React.FC<AnimetedGridProps> = ({animationDirection = 'bottom', children, ...rest}: AnimetedGridProps) => {
     return (
-        <AnimetedGrid animationDirection={animationDirection} {...rest}>
+        <AnimetedGrid animationDirection={animationDirection} {...rest} >
             <>
                 {children}
             </>

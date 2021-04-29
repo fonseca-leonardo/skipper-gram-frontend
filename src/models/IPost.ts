@@ -1,11 +1,15 @@
+import ICampaign from "./ICampaign";
+
 export default interface IPost {
-  id: number;
-  name: string;
-  campaign?: {
-    id: number;
-    name: string;
-    color: string;
-  };
-  message: string;
-  lastUpdate: string;
+  _id: number;
+
+  title: string;
+
+  campaign?: ICampaign;
+
+  text?: string;
+
+  updatedAt: string;
+
+  createdAt: string;
 }

@@ -2,23 +2,27 @@ import React, { createContext, useCallback, useState, useContext } from 'react';
 import { LocalStorageKeys } from '../constants';
 
 interface UserData {
+  _id: string;
+
   email: string;
-  id: string;
+
   name: string;
 }
 
 interface AuthState {
-  token: string;
-  user: UserData;
+  token?: string;
+  user?: UserData;
 }
 
 interface SignInCredentials {
-  token: string;
-  user: UserData;
+  token?: string;
+
+  user?: UserData;
 }
 
 interface AuthContextData {
-  user: UserData;
+  user?: UserData;
+  token?: string;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
 }
@@ -30,8 +34,16 @@ const AuthProvider: React.FC = ({ children }) => {
     const token = localStorage.getItem(LocalStorageKeys.TOKEN);
     const user = localStorage.getItem(LocalStorageKeys.USER);
 
-    if (token && user) {
-      return { token, user: JSON.parse(user) };
+    if (token) {
+      return { token };
+    }
+
+    if (user) {
+      return { user: JSON.parse(user) };
+    }
+
+    if (user && token) {
+      return { user: JSON.parse(user), token };
     }
 
     return {} as AuthState;
@@ -39,9 +51,13 @@ const AuthProvider: React.FC = ({ children }) => {
 
   const signIn = useCallback(async ({ token, user }) => {
     localStorage.setItem(LocalStorageKeys.TOKEN, token);
-    localStorage.setItem(LocalStorageKeys.USER, JSON.stringify(user));
+    
+    if (user) {
+      localStorage.setItem(LocalStorageKeys.USER, JSON.stringify(user));
+    }
 
-    setData({ token, user });
+
+    setData(prev => ({ ...prev, token, user: user }));
   }, []);
 
   const signOut = useCallback(() => {
@@ -52,7 +68,7 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+    <AuthContext.Provider value={{ user: data.user, token: data.token ,signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

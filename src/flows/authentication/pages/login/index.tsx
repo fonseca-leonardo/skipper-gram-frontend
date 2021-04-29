@@ -1,29 +1,41 @@
-import React, { Component } from "react";
+import React, { useCallback, useState } from "react";
+
+import { useAuth } from '../../../../hooks/auth';
+import UserService from '../../../../services/UserService';
+
 import LoginLayout from "./layout";
 
-type LoginProps = {
-
+export type LoginForm = {
+  email: string;
+  password: string;
 }
 
-type LoginState = {
-  requestLogin: {
-    isLoading: boolean;
-  }
-}
+const Login: React.FC = () => {
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const { signIn } = useAuth();
 
-export default class Login extends Component<LoginProps, LoginState> {
-  constructor (props: LoginProps) {
-    super(props);
 
-    this.state = {
-      requestLogin: {
-        isLoading: false
-      }
+  const _onLogin = useCallback(async ({ email, password }: LoginForm) => {
+    try {
+      setLoading(true);
+
+      const { token } = await UserService.login(email, password);
+  
+      signIn({ token });
+      
+      const { data } = await UserService.authenticate();
+  
+      signIn({ token, user: data });
+  
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
     }
-  }
-  render() {
-    return (
-      <LoginLayout />
-    );
-  }
+  }, [signIn]);
+
+  return (
+    <LoginLayout isLoading={isLoading} onLogin={_onLogin} />
+  )
 }
+
+export default Login;

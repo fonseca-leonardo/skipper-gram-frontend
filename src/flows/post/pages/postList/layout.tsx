@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { 
     Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper,
@@ -17,6 +17,7 @@ import ColorChip from '../../../../components/ColorChip';
 import IPost from '../../../../models/IPost';
 import NavigationBar from '../../../../components/NavigationBar';
 import Topbar from '../../../../components/Topbar';
+import { formatISO } from 'date-fns';
 
 const DebounceTextField = ({ ...props }: TextFieldProps) => (
     <TextField
@@ -94,7 +95,7 @@ export default function PostListLayout({ postList, isLoading }: Props) {
 
     const _onSelectAll = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            setSelectedRows(postList.map(post => post.id))
+            setSelectedRows(postList.map(post => post._id))
         } else {
             setSelectedRows([]);
         }
@@ -143,7 +144,6 @@ export default function PostListLayout({ postList, isLoading }: Props) {
                                             icon={(selectedRows.length > 0) ? ((selectedRows.length === postList.length) ? <CheckBox color="primary"/> : <IndeterminateCheckBox color="primary" /> ) : undefined}
                                         />
                                     </TableCell>
-                                    <TableCell width={50}>ID</TableCell>
                                     <TableCell width={330}>Título</TableCell>
                                     <TableCell width={200}>Campanha</TableCell>
                                     <TableCell width={150}>Ult. Atualização</TableCell>
@@ -163,12 +163,11 @@ export default function PostListLayout({ postList, isLoading }: Props) {
                                     <>
                                         <TableBody >
                                             {postList.map(post => (
-                                                <TableRow hover key={post.id} >
+                                                <TableRow hover key={post._id} >
                                                     <TableCell>
-                                                        <Checkbox color="primary" checked={_isChecked(post.id)} onChange={() => _onSelectRow(post.id)}/>
+                                                        <Checkbox color="primary" checked={_isChecked(post._id)} onChange={() => _onSelectRow(post._id)}/>
                                                     </TableCell>
-                                                    <TableCell>{post.id}</TableCell>
-                                                    <TableCell>{post.name}</TableCell>
+                                                    <TableCell>{post.title}</TableCell>
                                                         {
                                                             post.campaign ? (
                                                                 <TableCell>
@@ -180,11 +179,13 @@ export default function PostListLayout({ postList, isLoading }: Props) {
                                                                 </TableCell>  
                                                             )
                                                         }
-                                                    <TableCell>{parseISODate(post.lastUpdate, 'dd/MM/yyyy HH:mm')}</TableCell>
+                                                    <TableCell>{parseISODate(post.updatedAt, 'dd/MM/yyyy HH:mm')}</TableCell>
                                                     <TableCell>
+                                                        <Link to={`/post/${post._id}`}>
                                                         <IconButton color="primary">
                                                             <Edit />
                                                         </IconButton>
+                                                        </Link>
                                                         <IconButton color="secondary">
                                                             <Delete />
                                                         </IconButton>

@@ -47,28 +47,33 @@ const appearFromTop = keyframes`
   }
 `;
 
-export const AnimetedGrid = styled(Grid)`
+export const AnimetedGrid = styled(({animationDirection, ...rest}) => <Grid {...rest}/>)`
   ${({ animationDirection }: AnimetedGridProps) =>
-    animationDirection === "right" &&
-    css`
-      animation: ${appearFromRight} 1s;
-    `};
+    animationDirection === "right"
+      ? css`
+          animation: ${appearFromRight} 1s;
+        `
+      : css``};
+
+  ${({ animationDirection } : AnimetedGridProps) =>
+    animationDirection === "left"
+      ? css`
+          animation: ${appearFromLeft} 1s;
+        `
+      : css``};
 
   ${({ animationDirection }: AnimetedGridProps) =>
-    animationDirection === "left" &&
-    css`
-      animation: ${appearFromLeft} 1s;
-    `};
+    animationDirection === "bottom"
+      ? css`
+          animation: ${appearFromBottom} 1s;
+        `
+      : css``};
 
   ${({ animationDirection }: AnimetedGridProps) =>
-    animationDirection === "bottom" &&
-    css`
-      animation: ${appearFromBottom} 1s;
-    `};
+    animationDirection === "top"
+      ? css`
+          animation: ${appearFromTop} 1s;
+        `
+      : css``};
 
-  ${({ animationDirection }: AnimetedGridProps) =>
-    animationDirection === "top" &&
-    css`
-      animation: ${appearFromTop} 1s;
-    `};
 `;

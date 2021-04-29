@@ -47,15 +47,13 @@ const TagsContainer = styled.div`
 
 export default function PostDetailLayout() {
     const [post] = useState<IPost>({
-        id: 2,
-        name: 'Algum Post de Pascoa',
-        campaign: {
-            id: 2,
-            name: 'Campanha Páscoa',
-            color: 'pink',
-        },
-        message: '',
-        lastUpdate: '2021-02-09T19:21:27.000Z',
+        _id: 2,
+        text: 'Algum Post de Pascoa',
+        title: '',
+        updatedAt: "2021-04-29T14:20:26.518Z",
+        createdAt: "2021-04-29T14:20:26.518Z",
+        
+
     });
     const [hashTags] = useState<IHashTags[]>([
         {
@@ -82,7 +80,7 @@ export default function PostDetailLayout() {
 
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
-    const [legend, setLegend] = useState<string>(post.message);
+    const [legend, setLegend] = useState<string>(post.text || '');
     const [cursorPosition, setCursorPosition] = useState<number>(0);
 
 
@@ -126,7 +124,7 @@ export default function PostDetailLayout() {
                 <Toolbar>
                     <Grid container alignItems="center" spacing={2}>
                         <Grid item>
-                            <Typography variant="h6">{post.name}</Typography>
+                            <Typography variant="h6">{post.title}</Typography>
                         </Grid>
                     </Grid>
                 </Toolbar>
@@ -190,7 +188,7 @@ export default function PostDetailLayout() {
                         <Grid item>
                             <HashTagPaper>
                                 <Typography variant="subtitle2">Post</Typography>
-                                <TextField fullWidth value={post.name} placeholder="Nome"/>
+                                <TextField fullWidth value={post.title} placeholder="Nome"/>
                                 <br />
                                 <br />
                                 <Typography variant="subtitle2">{ post.campaign ? 'Campanha' : 'Criar Campanha' }</Typography>

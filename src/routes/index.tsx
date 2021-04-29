@@ -15,7 +15,7 @@ const Routes: React.FC = () => {
             <Route path='/cadastrar' component={SignUpPage} />
             {
                 PrivateRoutes.map(route => (
-                    <Route key={route.path} path={route.path} component={route.page} exact={route.exact}/>
+                    <Route key={route.path} path={route.path} component={route.page} exact={route.exact} isPrivate/>
                 ))
             }
         </Switch>

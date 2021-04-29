@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+
 import IPost from '../../../../models/IPost';
+import PostService from '../../../../services/PostService';
+
 import PostListLayout from './layout';
 
 type IState = {
@@ -15,41 +18,28 @@ export default class PostListPage extends Component<{}, IState> {
 
         this.state = {
             requestPostList: {
-                postList: [
-                    {
-                        id: 1,
-                        name: 'Post de Bem-vindo',
-                        campaign: {
-                            id: 1,
-                            name: 'Primeiro',
-                            color: 'blue',
-                        },
-                        message: '',
-                        lastUpdate: '2021-02-09T19:21:27.000Z',
-                      },
-                      {
-                        id: 2,
-                        name: 'Algum Post de Pascoa',
-                        campaign: {
-                            id: 2,
-                            name: 'Campanha Páscoa',
-                            color: 'green',
-                        },
-                        message: '',
-                        lastUpdate: '2021-02-09T19:21:27.000Z',   
-                  
-                      },
-                      {
-                        id: 3,
-                        name: 'Post com tema de Natal',
-                        lastUpdate: '2021-02-09T19:21:27.000Z',
-                        message: '',
-                      }
-                ],
-                isLoading: false
+                postList: [],
+                isLoading: true
             }
         }
     }
+
+    componentDidMount = () => {
+        this._onFetchPostList('', 0, 10)
+    }
+
+    private _onFetchPostList = async (searchTerm: string, skip: number, take: number) => {
+        try {
+            this.setState(prev => ({...prev, requestPostList: {...prev.requestPostList, isLoading: true} }));
+
+            const {data: { postList }} = await PostService.list({ searchTerm, skip, take });
+
+            this.setState(prev => ({...prev, requestPostList: {...prev.requestPostList, postList, isLoading: false} }));
+        } catch (error) {
+            this.setState(prev => ({...prev, requestPostList: {...prev.requestPostList, isLoading: false} }));
+        }
+    }
+
     render() {
         const { requestPostList } = this.state;
         return (
