@@ -79,10 +79,18 @@ const LoginLayout: React.FC<Props> = ({ isLoading, onLogin }) => {
                                     }
                                     </Button>
                                 </Grid>
-                                <Grid item container justify="center">
-                                    <Link href="/cadastrar">
-                                        <Typography>Cadastrar</Typography>
-                                    </Link>
+                                <Grid item container justify="center" direction="column" alignItems='center'>
+                                    <Grid item>
+                                        <Link href="/cadastrar" variant="h6">
+                                            <Typography variant="h6">Cadastrar</Typography>
+                                        </Link>
+                                    </Grid>
+                                    <br />
+                                    <Grid item>
+                                        <Link href="/recuperar" variant="caption">
+                                            <Typography>Esqueci minha senha</Typography>
+                                        </Link>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>

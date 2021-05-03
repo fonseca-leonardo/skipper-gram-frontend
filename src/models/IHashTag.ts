@@ -1,9 +1,13 @@
 export default interface IHashTags {
-  id: number;
+  _id: string;
 
   name: string;
 
   tags: string[];
 
-  color: string;
+  tagColor: string;
+
+  createdAt: string;
+
+  updatedAt: string;
 }

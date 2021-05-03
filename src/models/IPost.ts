@@ -1,7 +1,7 @@
 import ICampaign from "./ICampaign";
 
 export default interface IPost {
-  _id: number;
+  _id: string;
 
   title: string;
 

@@ -1,16 +1,22 @@
-import React, { useState, MouseEvent, ChangeEvent, useCallback, useRef } from 'react';
+import React, { useState, MouseEvent, useCallback, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import {
-    AppBar, Grid, Toolbar, Typography,
+    Grid, Typography,
     Tooltip, TextField, Paper, Button,
     IconButton, Popover, Dialog, DialogTitle, DialogContent,
     DialogActions,
-    DialogContentText
+    DialogContentText,
+    Backdrop,
+    CircularProgress
 } from '@material-ui/core';
 import { Close, InsertEmoticon } from '@material-ui/icons';
+import { Autocomplete } from '@material-ui/lab';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Picker, BaseEmoji } from 'emoji-mart';
 import { useSnackbar } from 'notistack'; 
+import { DebounceInput } from 'react-debounce-input';
+
+
 import 'emoji-mart/css/emoji-mart.css'
 
 
@@ -18,6 +24,9 @@ import IPost from '../../../../models/IPost';
 import ColorChip from '../../../../components/ColorChip';
 import IHashTags from '../../../../models/IHashTag';
 import NavigationBar from '../../../../components/NavigationBar';
+import PageContainer from '../../../../components/PageContainer';
+import Topbar from '../../../../components/Topbar';
+import ICampaign from '../../../../models/ICampaign';
 
 const HashTagPaper = styled(Paper)`
     padding: 12px;
@@ -45,46 +54,41 @@ const TagsContainer = styled.div`
     }
 `;
 
-export default function PostDetailLayout() {
-    const [post] = useState<IPost>({
-        _id: 2,
-        text: 'Algum Post de Pascoa',
-        title: '',
-        updatedAt: "2021-04-29T14:20:26.518Z",
-        createdAt: "2021-04-29T14:20:26.518Z",
-        
+interface Props {
+    requestPost: IPost;
 
-    });
-    const [hashTags] = useState<IHashTags[]>([
-        {
-            id: 1,
-            name: 'Tags usuais',
-            color: 'rgb(71, 35, 230)',
-            tags: ['#vindi', '#financeiro'],
-        },
-        {
-            id: 2,
-            name: 'Tags de pascoa',
-            color: 'rgb(35, 113, 230)',
-            tags: ['#felizpascoa', '#diadepascoa'],
-        },
-        {
-            id: 3,
-            name: 'Natal',
-            color: 'rgb(0, 0, 0)',
-            tags: ['#feliznatal', '#nataldavindi'],
-        }
-    ]);
+    isLoading: boolean;
+
+    campaignList: ICampaign[];
+
+    hashtagList: IHashTags[];
+
+    onUpdatedPost(title: string, text?: string, campaignId?: string | null): Promise<void>;
+
+    onDeletePost(): Promise<void>;
+
+    onFetchCampaign(searchTerm: string): Promise<void>;
+}
+
+const PostDetailLayout: React.FC<Props> = ({ requestPost, isLoading, campaignList, hashtagList, onUpdatedPost, onDeletePost }) => {
+    const [post, setPost] = useState<IPost>(requestPost);
+
     const [dialogOpen, setDialogOpen] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
 
-    const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+    const textAreaRef = useRef<HTMLInputElement | null>(null);
 
-    const [legend, setLegend] = useState<string>(post.text || '');
+    const [legend, setLegend] = useState<string>(post.text || "");
     const [cursorPosition, setCursorPosition] = useState<number>(0);
 
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+    useEffect(() => { 
+        setPost(requestPost);
+        setLegend(requestPost.text || "");
+    }, [requestPost]);
+    
 
     const handleOpenEmojiPicker = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -94,46 +98,62 @@ export default function PostDetailLayout() {
         setAnchorEl(null);
     };
 
-    const onConfirmDelete = useCallback(() => {
+    const onConfirmDelete = useCallback(async () => {
+        await onDeletePost();
+        
         setDialogOpen(false);
-    }, [])
+    }, [onDeletePost])
 
-    const onLegendChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-        setLegend(event.target.value);
-    }   
+    const onLegendChange = async (value: string) => {
+        setLegend(value);
+        
+        await onPostChange(value, 'text');
+    }
     
-    const emojiSelected = (emoji: BaseEmoji) => {
-        setLegend(prev => prev.slice(0,cursorPosition) + emoji.native + prev.slice(cursorPosition));
+    const emojiSelected = async (emoji: BaseEmoji) => {
+        const text = legend.slice(0,cursorPosition) + emoji.native + legend.slice(cursorPosition);
+        setLegend(text);
         setCursorPosition(cursorPosition + emoji.native.length);
+
+        await onPostChange(text, 'text');
     }
 
-    const onSelectHashTag = (tagSelected: IHashTags) => {
-        tagSelected.tags.forEach(tag => setLegend(prev => prev + ` ${tag}`));
+    const onSelectHashTag = async (tagSelected: IHashTags) => {
+        let tagsText = '';
+        tagSelected.tags.forEach(tag => { tagsText = tagsText + ` ${tag}` });
+        const updatedLegend = legend + tagsText;
+
+        setLegend(updatedLegend);
+
+        await onPostChange(updatedLegend, 'text');
     }
 
     const formatLegend = (legendToFormat: string): string => {
         return legendToFormat.replace(/(?:\r\n|\r|\n)/g, "\u2063\n");
     }
 
+    const onPostChange = async (data: string, key: keyof IPost) => {
+        const updatePost = {...post, [key]: data };
+        setPost(updatePost);
+
+        await onUpdatedPost(updatePost.title, updatePost.text, updatePost.campaign?._id);
+    }
+
+    const onDetachCampaign = async () => {
+        await onUpdatedPost(post.title, post.text, null);
+    }
+
+    const onAttachCampaign = async (campaignId: string) => {
+        await onUpdatedPost(post.title, post.text, campaignId);
+    }
+
     const openEmojiPicker = Boolean(anchorEl);
     const id = openEmojiPicker ? 'emoji-picker' : undefined;
 
     return (
-        <>
-            <AppBar variant="elevation" color="primary">
-                <Toolbar>
-                    <Grid container alignItems="center" spacing={2}>
-                        <Grid item>
-                            <Typography variant="h6">{post.title}</Typography>
-                        </Grid>
-                    </Grid>
-                </Toolbar>
-            </AppBar>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
+        <PageContainer>
+            <Topbar title={post.title} />
+
             <Grid container direction="column" spacing={2}>
                 <Grid item container justify="flex-end">
                     <Button variant="contained" color="secondary" onClick={() => setDialogOpen(true)}>Excluir Postagem</Button>
@@ -160,20 +180,26 @@ export default function PostDetailLayout() {
                                     <Popover id={id} anchorEl={anchorEl} open={openEmojiPicker} onClose={handleCloseEmojiPicker}>
                                         <Picker onSelect={emojiSelected}/>
                                     </Popover>
-                                    <TextField
+                                    <DebounceInput
+                                        element={TextField}
+                                        minLength={3}
+                                        debounceTimeout={1000}
                                         focused
                                         id="legend-textarea"
                                         inputRef={textAreaRef}
                                         placeholder="Legenda do post"
-                                        onFocus={(e) => setCursorPosition(e.target.selectionStart || 0)}
-                                        onClick={(e) => setCursorPosition(textAreaRef?.current?.selectionStart || 0)}
-                                        onKeyDown={() => setCursorPosition(textAreaRef?.current?.selectionStart || 0)}
+                                        onFocus={(e: any) => setCursorPosition(e.target.selectionStart || 0)}
+                                        onClick={(e: any) => setCursorPosition(e.target.selectionStart || 0)}
+                                        onKeyUp={() => {
+                                            const ref = textAreaRef as any;
+                                            setCursorPosition(ref.current?.firstChild?.firstChild?.selectionStart || 0)
+                                        }}
                                         multiline
                                         rows={22}
-                                        inputProps={{ style: { width: 450}}}
+                                        inputProps={{ style: { width: 450 }}}
                                         variant="outlined"
                                         value={legend}
-                                        onChange={onLegendChange}
+                                        onChange={(e) => onLegendChange(e.target.value)}
                                     />
                                 </LegendTextField>
                             </Grid>
@@ -188,26 +214,32 @@ export default function PostDetailLayout() {
                         <Grid item>
                             <HashTagPaper>
                                 <Typography variant="subtitle2">Post</Typography>
-                                <TextField fullWidth value={post.title} placeholder="Nome"/>
+                                <DebounceInput
+                                    element={TextField}
+                                    minLength={3}
+                                    debounceTimeout={1000}
+                                    onChange={(e) => onPostChange(e.target.value, 'title')}
+                                    value={post.title}
+                                    placeholder="Nome"
+                                    fullWidth
+                                />
                                 <br />
                                 <br />
-                                <Typography variant="subtitle2">{ post.campaign ? 'Campanha' : 'Criar Campanha' }</Typography>
-                                <br />
+                                <Typography variant="subtitle2">
+                                    { post.campaign ? 'Campanha' : 'Vincule a uma campanha' }
+                                </Typography>
+                                
                                 {
                                     post.campaign ? (
-                                        <ColorChip htmlColor={post.campaign.color} label={post.campaign.name} onDelete={() => { console.log('AQUI') }} deleteIcon={<Tooltip title="Desvincular campanha"><Close /></Tooltip>} />
+                                        <ColorChip htmlColor={post.campaign.tagColor} label={post.campaign.title} onDelete={onDetachCampaign} deleteIcon={<Tooltip title="Desvincular campanha"><Close /></Tooltip>} />
                                     ) : (
                                         <>
-                                            <Typography variant="subtitle2">Nome</Typography>
-                                            <TextField fullWidth placeholder="Nome"/>
-                                            <br />
-                                            <br />
-                                            <Typography variant="subtitle2">Cor</Typography>
-                                            <TextField fullWidth placeholder=""/>
-                                            <br />
-                                            <br />
-                                            <Button variant="contained" color="primary">Criar</Button>
-                                            <br />
+                                            <Autocomplete
+                                                options={campaignList}
+                                                getOptionLabel={(option: ICampaign) => option.title }
+                                                renderInput={(params) => <TextField {...params}/>}
+                                                onChange={(_, value) => onAttachCampaign(value?._id || '')}
+                                            />
                                         </>
                                     )
                                 }
@@ -220,8 +252,8 @@ export default function PostDetailLayout() {
                                 <br />
                                 <TagsContainer>
                                     {
-                                        hashTags.map(tag => (
-                                            <ColorChip key={tag.id} color="primary" htmlColor={tag.color} label={tag.name} onClick={() => {onSelectHashTag(tag)}}/>
+                                        hashtagList.map(tag => (
+                                            <ColorChip key={tag._id} color="primary" htmlColor={tag.tagColor} label={tag.name} onClick={() => {onSelectHashTag(tag)}}/>
                                         ))
                                     }
                                 </TagsContainer>
@@ -242,6 +274,11 @@ export default function PostDetailLayout() {
                     <Button onClick={onConfirmDelete} variant="contained" color="secondary">Confirmar</Button>
                 </DialogActions>
             </Dialog>
-        </>
+            <Backdrop open={isLoading} style={{ zIndex: 5 }}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+        </PageContainer>
     )
 }
+
+export default PostDetailLayout;

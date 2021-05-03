@@ -9,6 +9,6 @@ export interface ColorChipProps extends ChipProps {
 
 export default function ColorChip({ htmlColor = '', ...props }: ColorChipProps) {
     return (
-        <StyledColorChip htmlColor={htmlColor} {...props} />
+        <StyledColorChip htmlColor={htmlColor} {...props}  />
     )
 }

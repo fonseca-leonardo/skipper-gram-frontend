@@ -1,7 +1,7 @@
 import { Grid } from "@material-ui/core";
 import styled, { keyframes, css } from "styled-components";
 
-import { AnimetedGridProps } from "./index";
+import { AnimatedGridProps } from "./index";
 
 const appearFromRight = keyframes`
   from {
@@ -48,28 +48,28 @@ const appearFromTop = keyframes`
 `;
 
 export const AnimetedGrid = styled(({animationDirection, ...rest}) => <Grid {...rest}/>)`
-  ${({ animationDirection }: AnimetedGridProps) =>
+  ${({ animationDirection }: AnimatedGridProps) =>
     animationDirection === "right"
       ? css`
           animation: ${appearFromRight} 1s;
         `
       : css``};
 
-  ${({ animationDirection } : AnimetedGridProps) =>
+  ${({ animationDirection } : AnimatedGridProps) =>
     animationDirection === "left"
       ? css`
           animation: ${appearFromLeft} 1s;
         `
       : css``};
 
-  ${({ animationDirection }: AnimetedGridProps) =>
+  ${({ animationDirection }: AnimatedGridProps) =>
     animationDirection === "bottom"
       ? css`
           animation: ${appearFromBottom} 1s;
         `
       : css``};
 
-  ${({ animationDirection }: AnimetedGridProps) =>
+  ${({ animationDirection }: AnimatedGridProps) =>
     animationDirection === "top"
       ? css`
           animation: ${appearFromTop} 1s;

@@ -1,9 +1,9 @@
 export default interface ICampaign {
-  _id: number;
+  _id: string;
 
-  name: string;
+  title: string;
 
-  color: string;
+  tagColor: string;
 
   createdAt: string;
 

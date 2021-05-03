@@ -4,9 +4,13 @@ import {  useTheme } from '@material-ui/core/styles';
 import CampaignIcon from '../assets/Icons/Campaign';
 import HashTag from '../assets/Icons/HashTag';
 
-import { FormatListBulleted } from '@material-ui/icons';
+import { FormatListBulleted, HelpOutline } from '@material-ui/icons';
 import { PostDetailPage, PostListPage } from '../flows/post';
 import { HashtagListPage } from '../flows/hastags';
+import { SupportPage } from '../flows/support';
+import { CampaignListsPage } from '../flows/campaign';
+
+
 
 
 interface IconPath {
@@ -38,7 +42,7 @@ export const PrivateRoutes = [
         path: '/campanha',
         title: 'Suas Campanhas',
         Icon: ({ path, currentPath }: IconPath) => <CampaignIcon height={24} width={24} color={(path === currentPath ) ? 'primary' : undefined} />,
-        page: PostListPage,
+        page: CampaignListsPage,
         listable: true,
         exact: false,
 
@@ -49,6 +53,14 @@ export const PrivateRoutes = [
         title: 'Suas Tags',
         Icon: ({ path, currentPath }: IconPath) => <HashTag height={24} width={24} color={(path === currentPath ) ? 'primary' : undefined} />,
         page: HashtagListPage,
+        listable: true,
+        exact: false,
+    },
+    {
+        path: '/suporte',
+        title: 'Suporte',
+        Icon: ({ path, currentPath}: IconPath) => <HelpOutline height={24} width={24} color={(path === currentPath ) ? 'primary' : undefined} />,
+        page: SupportPage,
         listable: true,
         exact: false,
     }

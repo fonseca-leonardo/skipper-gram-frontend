@@ -5,7 +5,7 @@ import { readableColor } from "polished";
 
 import { ColorChipProps } from "./index";
 
-export const StyledColorChip = styled(Chip)`
+export const StyledColorChip = styled(({htmlColor, ...rest}) => <Chip{...rest}/>)`
   background: ${({ htmlColor }: ColorChipProps) => htmlColor};
 
   font-weight: bold;

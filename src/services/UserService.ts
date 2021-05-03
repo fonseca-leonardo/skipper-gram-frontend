@@ -4,6 +4,8 @@ const routes = {
   login: "/users/signin",
   authenticate: "/users/authenticate",
   signup: "/users/signup",
+  change: "/users/recoverPassword",
+  recoverPassword: "/users/recoverPassword",
 };
 
 class UserService {
@@ -25,6 +27,14 @@ class UserService {
     const result = await api.post(routes.signup, { email, password, name });
 
     return result.data;
+  }
+
+  public async recoverPassword(newPassword: string, token: string) {
+    await api.patch(routes.recoverPassword, { newPassword, token });
+  }
+
+  public async initRecoverPassword(email: string) {
+    await api.post(routes.recoverPassword, { email });
   }
 }
 

@@ -96,7 +96,7 @@ const SignUpLayout: React.FC<Props> = ({ isLoading, onRegister }) => {
                                 </Grid>
                                 <Grid item container justify="center">
                                     <Link href="/">
-                                        <Typography>Entrar</Typography>
+                                        <Typography variant="h6">Login</Typography>
                                     </Link>
                                 </Grid>
                             </Grid>

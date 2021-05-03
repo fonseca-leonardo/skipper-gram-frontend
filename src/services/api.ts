@@ -45,21 +45,42 @@ api.interceptors.response.use(
   (error) => {
     const { status, data } = error.response;
 
-    if (data.message) {
+    if (status === 401) {
       store.dispatch(
         enqueueSnackbarAction({
           message: data.message,
           key: data.message,
           dismissed: false,
-          options: { variant: "error", autoHideDuration: 1500 },
+          options: { variant: "error", autoHideDuration: 2500 },
         })
       );
-    }
-
-    if (status === 401) {
       localStorage.removeItem(LocalStorageKeys.TOKEN);
       localStorage.removeItem(LocalStorageKeys.USER);
       window.location.replace("/");
+      return Promise.reject(error);
+    }
+
+    if (status === 500) {
+      store.dispatch(
+        enqueueSnackbarAction({
+          message: data.message,
+          key: data.message,
+          dismissed: false,
+          options: { variant: "error", autoHideDuration: 2500 },
+        })
+      );
+      return Promise.reject(error);
+    }
+
+    if (status === 400) {
+      store.dispatch(
+        enqueueSnackbarAction({
+          message: data.message,
+          key: data.message,
+          dismissed: false,
+          options: { variant: "warning", autoHideDuration: 2500 },
+        })
+      );
     }
     return Promise.reject(error);
   }
