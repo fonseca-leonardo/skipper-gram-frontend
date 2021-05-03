@@ -7,9 +7,9 @@ import {
     TextField, TableFooter, TablePagination,
     InputAdornment, TextFieldProps, CircularProgress, Button,
     Dialog, DialogTitle, DialogContent,
-    DialogActions, DialogContentText, Checkbox, Backdrop,
+    DialogActions, DialogContentText, Backdrop,
 } from '@material-ui/core';
-import { Delete, Edit, Search, IndeterminateCheckBox, CheckBox } from '@material-ui/icons';
+import { Delete, Edit, Search } from '@material-ui/icons';
 import { DebounceInput } from 'react-debounce-input';
 
 import parseISODate from '../../../../utils/parseISODate';
@@ -62,7 +62,7 @@ export default function PostListLayout({ postList, isTableLoading, isPageLoading
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const [selectedRows, setSelectedRows] = useState<Array<string | number>>([]);
+    // const [selectedRows, setSelectedRows] = useState<Array<string | number>>([]);
 
     const handleOpenDialog = useCallback(() => {
         setDialogOpen(true);
@@ -82,40 +82,40 @@ export default function PostListLayout({ postList, isTableLoading, isPageLoading
         }
     }, [history, onCreatePost, newPost])
     
-    const _isChecked = useCallback((id: string | number): boolean => {
-        const isChecked = selectedRows.find(item => item === id);
+    // const _isChecked = useCallback((id: string | number): boolean => {
+    //     const isChecked = selectedRows.find(item => item === id);
 
-        return !!isChecked;
-    }, [selectedRows]);
+    //     return !!isChecked;
+    // }, [selectedRows]);
 
-    const _onSelectRow = useCallback((id: string | number) => {
-        const selectedIndex = selectedRows.indexOf(id);
-        let newSelected: Array<string | number> = [];
+    // const _onSelectRow = useCallback((id: string | number) => {
+    //     const selectedIndex = selectedRows.indexOf(id);
+    //     let newSelected: Array<string | number> = [];
 
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selectedRows, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selectedRows.slice(1));
-        } else if (selectedIndex === selectedRows.length - 1) {
-            newSelected = newSelected.concat(selectedRows.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selectedRows.slice(0, selectedIndex),
-                selectedRows.slice(selectedIndex + 1),
-            );
-        }
+    //     if (selectedIndex === -1) {
+    //         newSelected = newSelected.concat(selectedRows, id);
+    //     } else if (selectedIndex === 0) {
+    //         newSelected = newSelected.concat(selectedRows.slice(1));
+    //     } else if (selectedIndex === selectedRows.length - 1) {
+    //         newSelected = newSelected.concat(selectedRows.slice(0, -1));
+    //     } else if (selectedIndex > 0) {
+    //         newSelected = newSelected.concat(
+    //             selectedRows.slice(0, selectedIndex),
+    //             selectedRows.slice(selectedIndex + 1),
+    //         );
+    //     }
 
-        setSelectedRows(newSelected);
+    //     setSelectedRows(newSelected);
 
-    }, [selectedRows]);
+    // }, [selectedRows]);
 
-    const _onSelectAll = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.checked) {
-            setSelectedRows(postList.map(post => post._id))
-        } else {
-            setSelectedRows([]);
-        }
-    }, [postList]);
+    // const _onSelectAll = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (event.target.checked) {
+    //         setSelectedRows(postList.map(post => post._id))
+    //     } else {
+    //         setSelectedRows([]);
+    //     }
+    // }, [postList]);
 
     const onSearchTermChange = async (searchTerm: string) => {
         setTableProps(prev => ({...prev, searchTerm }));

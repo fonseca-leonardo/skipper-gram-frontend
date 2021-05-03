@@ -11,11 +11,6 @@ interface Props {
     onRecoverPassword(email: string): Promise<void>;
 }
 
-interface UpdatePasswordForm {
-    password: string;
-    confirmPassword: string;
-}
-
 const InitRecoverPasswordLayout: React.FC<Props> = ({isLoading, onRecoverPassword}) => {
     const [email, setEmail] = useState<string>('');
 

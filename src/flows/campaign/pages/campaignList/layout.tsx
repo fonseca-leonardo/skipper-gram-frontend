@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
 
 import { Button, Grid, Paper, Table, TableCell, InputAdornment, 
-    TableContainer, TableHead, TableRow, TextField, TextFieldProps, Checkbox, TableBody,
+    TableContainer, TableHead, TableRow, TextField, TextFieldProps, TableBody,
     CircularProgress, TableFooter, TablePagination, IconButton, Dialog, DialogTitle,
     DialogContent, DialogContentText, DialogActions, Backdrop
 } from '@material-ui/core';
 
-import {  CheckBox, Delete, Edit, IndeterminateCheckBox, Search, } from '@material-ui/icons';
+import { Delete, Edit, Search, } from '@material-ui/icons';
 import { ColorPicker } from 'material-ui-color';
 import { DebounceInput } from 'react-debounce-input';
 
@@ -58,7 +58,7 @@ const CampaignListLayout: React.FC<Props> = ({ campaignList, isTableLoading, cou
 
     const [updateCampaign, setUpdateCampaign] = useState<ICampaign>({} as ICampaign);
     const [deleteCampaign, setDeleteCampaign] = useState<string>('');
-    const [selectedRows, setSelectedRows] = useState<Array<string | number>>([]);
+    // const [selectedRows, setSelectedRows] = useState<Array<string | number>>([]);
     
     const handleOpenDialog = useCallback(() => {
         setDialogOpen(true);
@@ -121,32 +121,32 @@ const CampaignListLayout: React.FC<Props> = ({ campaignList, isTableLoading, cou
         setDeleteDialogOpen(false);
     }, []);
 
-    const _isChecked = useCallback((id: string | number): boolean => {
-        const isChecked = selectedRows.find(item => item === id);
+    // const _isChecked = useCallback((id: string | number): boolean => {
+    //     const isChecked = selectedRows.find(item => item === id);
 
-        return !!isChecked;
-    }, [selectedRows]);
+    //     return !!isChecked;
+    // }, [selectedRows]);
 
-    const _onSelectRow = useCallback((id: string | number) => {
-        const selectedIndex = selectedRows.indexOf(id);
-        let newSelected: Array<string | number> = [];
+    // const _onSelectRow = useCallback((id: string | number) => {
+    //     const selectedIndex = selectedRows.indexOf(id);
+    //     let newSelected: Array<string | number> = [];
 
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selectedRows, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selectedRows.slice(1));
-        } else if (selectedIndex === selectedRows.length - 1) {
-            newSelected = newSelected.concat(selectedRows.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selectedRows.slice(0, selectedIndex),
-                selectedRows.slice(selectedIndex + 1),
-            );
-        }
+    //     if (selectedIndex === -1) {
+    //         newSelected = newSelected.concat(selectedRows, id);
+    //     } else if (selectedIndex === 0) {
+    //         newSelected = newSelected.concat(selectedRows.slice(1));
+    //     } else if (selectedIndex === selectedRows.length - 1) {
+    //         newSelected = newSelected.concat(selectedRows.slice(0, -1));
+    //     } else if (selectedIndex > 0) {
+    //         newSelected = newSelected.concat(
+    //             selectedRows.slice(0, selectedIndex),
+    //             selectedRows.slice(selectedIndex + 1),
+    //         );
+    //     }
 
-        setSelectedRows(newSelected);
+    //     setSelectedRows(newSelected);
 
-    }, [selectedRows]);
+    // }, [selectedRows]);
 
     const onSearchTermChange = async (searchTerm: string) => {
         setTableProps(prev => ({...prev, searchTerm }));
@@ -159,13 +159,13 @@ const CampaignListLayout: React.FC<Props> = ({ campaignList, isTableLoading, cou
 
     }
 
-    const _onSelectAll = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.checked) {
-            setSelectedRows(campaignList.map(post => post._id))
-        } else {
-            setSelectedRows([]);
-        }
-    }, [campaignList]);
+    // const _onSelectAll = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (event.target.checked) {
+    //         setSelectedRows(campaignList.map(post => post._id))
+    //     } else {
+    //         setSelectedRows([]);
+    //     }
+    // }, [campaignList]);
 
     const _onItemsPerPageChange = async (rowsPerPage: number) => {
         setTableProps(prev => ({...prev, rowsPerPage }));
